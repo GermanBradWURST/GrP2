@@ -41,8 +41,6 @@ namespace Template
             {
                 Size = new Vector2i(640, 360),
                 Profile = allowPrehistoricOpenGL ? ContextProfile.Compatability : ContextProfile.Core,  // required for fixed-function, which is probably not supported on MacOS
-                Flags = ContextFlags.Debug                                                              // enable error reporting
-                    | (allowPrehistoricOpenGL ? ContextFlags.Default : ContextFlags.ForwardCompatible), // required for MacOS
             })
         {
         }
