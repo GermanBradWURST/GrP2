@@ -7,7 +7,7 @@ namespace Template
     {
         // member variables
         public Surface screen;                  // background surface for printing etc.
-        Mesh? teapot, floor;                    // meshes to draw using OpenGL
+        Mesh? mesh, floor;                      // a mesh to draw using OpenGL
         float a = 0;                            // teapot rotation angle
         readonly Stopwatch timer = new();       // timer for measuring frame duration
         Shader? shader;                         // shader to use for rendering
@@ -15,7 +15,7 @@ namespace Template
         Texture? wood;                          // texture to use for rendering
         RenderTarget? target;                   // intermediate render target
         ScreenQuad? quad;                       // screen filling quad for post processing
-        readonly bool useRenderTarget = true;   // required for post processing
+        readonly bool useRenderTarget = true;
 
         // constructor
         public MyApplication(Surface screen)
@@ -26,7 +26,7 @@ namespace Template
         public void Init()
         {
             // load teapot
-            teapot = new Mesh("../../../assets/teapot.obj");
+            mesh = new Mesh("../../../assets/teapot.obj");
             floor = new Mesh("../../../assets/floor.obj");
             // initialize stopwatch
             timer.Reset();
@@ -58,10 +58,10 @@ namespace Template
 
             // prepare matrix for vertex shader
             float angle90degrees = MathF.PI / 2;
-            Matrix4 teapotObjectToWorld = Matrix4.CreateScale(0.5f) * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
-            Matrix4 floorObjectToWorld = Matrix4.CreateScale(4.0f) * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
-            Matrix4 worldToCamera = Matrix4.CreateTranslation(new Vector3(0, -14.5f, 0)) * Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), angle90degrees);
-            Matrix4 cameraToScreen = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60.0f), (float)screen.width/screen.height, .1f, 1000);
+            Matrix4 Tpot = Matrix4.CreateScale(0.5f) * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+            Matrix4 Tfloor = Matrix4.CreateScale(4.0f) * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+            Matrix4 Tcamera = Matrix4.CreateTranslation(new Vector3(0, -14.5f, 0)) * Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), angle90degrees);
+            Matrix4 Tview = Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
 
             // update rotation
             a += 0.001f * frameDuration;
@@ -75,8 +75,8 @@ namespace Template
                 // render scene to render target
                 if (shader != null && wood != null)
                 {
-                    teapot?.Render(shader, teapotObjectToWorld * worldToCamera * cameraToScreen, teapotObjectToWorld, wood);
-                    floor?.Render(shader, floorObjectToWorld * worldToCamera * cameraToScreen, floorObjectToWorld, wood);
+                    mesh?.Render(shader, Tpot * Tcamera * Tview, wood);
+                    floor?.Render(shader, Tfloor * Tcamera * Tview, wood);
                 }
 
                 // render quad
@@ -89,8 +89,8 @@ namespace Template
                 // render scene directly to the screen
                 if (shader != null && wood != null)
                 {
-                    teapot?.Render(shader, teapotObjectToWorld * worldToCamera * cameraToScreen, teapotObjectToWorld, wood);
-                    floor?.Render(shader, floorObjectToWorld * worldToCamera * cameraToScreen, floorObjectToWorld, wood);
+                    mesh?.Render(shader, Tpot * Tcamera * Tview, wood);
+                    floor?.Render(shader, Tfloor * Tcamera * Tview, wood);
                 }
             }
         }

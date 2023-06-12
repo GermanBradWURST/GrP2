@@ -2,8 +2,11 @@
 possible that the slower Intel GPU is used by default. Everything should still
 work, just not as fast as it could be.
 
+You can check which GPU is being used with the code:
+	Console.WriteLine(GL.GetString(StringName.Renderer));
+
 There are different ways to use the discrete GPU instead. Here's one way that
-should work on Windows x64:
+should work on Windows:
 
 	1. Ensure that the .NET 5.0 Runtime is installed
 		a. Menu: Tools > Get Tools and Features...

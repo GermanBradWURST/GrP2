@@ -1,26 +1,22 @@
-﻿#version 330
+﻿	#version 330
  
-// shader inputs
-in vec3 vertexPositionObject;	// vertex position in Object Space
-in vec3 vertexNormalObject;		// vertex normal in Object Space
-in vec2 vertexUV;				// vertex uv texture coordinates
-uniform mat4 objectToScreen;
-uniform mat4 objectToWorld;
+// shader input
+in vec2 vUV;			// vertex uv coordinate
+in vec3 vNormal;		// untransformed vertex normal
+in vec3 vPosition;		// untransformed vertex position
 
-// shader outputs, will be interpolated from vertices to fragments
-out vec4 positionWorld;			// vertex position in World Space
-out vec4 normalWorld;			// vertex normal in World Space
-out vec2 uv;					// vertex uv texture coordinates (pass-through)
+// shader output
+out vec4 normal;		// transformed vertex normal
+out vec2 uv;				
+uniform mat4 transform;
  
 // vertex shader
 void main()
 {
-	// transform vertex position to 2D Screen Space + depth
-	gl_Position = objectToScreen * vec4(vertexPositionObject, 1.0);
+	// transform vertex using supplied matrix
+	gl_Position = transform * vec4(vPosition, 1.0);
 
-	// transform vertex position and normal to an appropriate space for shading calculations
-	positionWorld = objectToWorld * vec4(vertexPositionObject, 1.0);
-	normalWorld = inverse(transpose(objectToWorld)) * vec4(vertexNormalObject, 0.0f);
-	// pass the uv coordinate
-	uv = vertexUV;
+	// forward normal and uv coordinate; will be interpolated over triangle
+	normal = transform * vec4( vNormal, 0.0f );
+	uv = vUV;
 }

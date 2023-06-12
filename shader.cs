@@ -8,30 +8,26 @@ namespace Template
     {
         // data members
         public int programID, vsID, fsID;
-        public int in_vertexPositionObject;
-        public int in_vertexNormalObject;
-        public int in_vertexUV;
-        public int uniform_objectToScreen;
-        public int uniform_objectToWorld;
+        public int attribute_vpos;
+        public int attribute_vnrm;
+        public int attribute_vuvs;
+        public int uniform_mview;
 
         // constructor
-        public Shader(string vertexShader, string fragmentShader)
+        public Shader(String vertexShader, String fragmentShader)
         {
             // compile shaders
             programID = GL.CreateProgram();
-            GL.ObjectLabel(ObjectLabelIdentifier.Program, programID, -1, vertexShader + " + " + fragmentShader);
             Load(vertexShader, ShaderType.VertexShader, programID, out vsID);
             Load(fragmentShader, ShaderType.FragmentShader, programID, out fsID);
             GL.LinkProgram(programID);
-            string infoLog = GL.GetProgramInfoLog(programID);
-            if (infoLog.Length != 0) Console.WriteLine(infoLog);
+            Console.WriteLine(GL.GetProgramInfoLog(programID));
 
             // get locations of shader parameters
-            in_vertexPositionObject = GL.GetAttribLocation(programID, "vertexPositionObject");
-            in_vertexNormalObject = GL.GetAttribLocation(programID, "vertexNormalObject");
-            in_vertexUV = GL.GetAttribLocation(programID, "vertexUV");
-            uniform_objectToScreen = GL.GetUniformLocation(programID, "objectToScreen");
-            uniform_objectToWorld = GL.GetUniformLocation(programID, "objectToWorld");
+            attribute_vpos = GL.GetAttribLocation(programID, "vPosition");
+            attribute_vnrm = GL.GetAttribLocation(programID, "vNormal");
+            attribute_vuvs = GL.GetAttribLocation(programID, "vUV");
+            uniform_mview = GL.GetUniformLocation(programID, "transform");
         }
 
         // loading shaders
@@ -39,12 +35,10 @@ namespace Template
         {
             // source: http://neokabuto.blogspot.nl/2013/03/opentk-tutorial-2-drawing-triangle.html
             ID = GL.CreateShader(type);
-            GL.ObjectLabel(ObjectLabelIdentifier.Shader, ID, -1, filename);
             using (StreamReader sr = new StreamReader(filename)) GL.ShaderSource(ID, sr.ReadToEnd());
             GL.CompileShader(ID);
             GL.AttachShader(program, ID);
-            string infoLog = GL.GetShaderInfoLog(ID);
-            if (infoLog.Length != 0) Console.WriteLine(infoLog);
+            Console.WriteLine(GL.GetShaderInfoLog(ID));
         }
     }
 }

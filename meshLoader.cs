@@ -2,10 +2,8 @@
 
 namespace Template
 {
-    // Mesh and MeshLoader based on work by JTalton; https://web.archive.org/web/20160123042419/www.opentk.com/node/642
-    // Only triangles and quads with vertex positions, normals, and texture coordinates are supported
-    // Any other content in the OBJ file is ignored
-    // You may need to convert existing OBJ files to use only the supported features
+    // mesh and loader based on work by JTalton; http://www.opentk.com/node/642
+
     public class MeshLoader
     {
         public bool Load(Mesh mesh, string fileName)
@@ -42,6 +40,8 @@ namespace Template
                 string[] parameters = line.Split(splitCharacters);
                 switch (parameters[0])
                 {
+                    case "p": // point
+                        break;
                     case "v": // vertex
                         float x = float.Parse(parameters[1]);
                         float y = float.Parse(parameters[2]);

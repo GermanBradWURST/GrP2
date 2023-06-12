@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -39,61 +38,22 @@ namespace Template
         public OpenTKApp()
             : base(GameWindowSettings.Default, new NativeWindowSettings()
             {
-                Size = new Vector2i(640, 360),
+                Size = new Vector2i(640, 400),
                 Profile = allowPrehistoricOpenGL ? ContextProfile.Compatability : ContextProfile.Core,  // required for fixed-function, which is probably not supported on MacOS
             })
         {
         }
 
-        public void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
-        {
-            Dictionary<DebugSource, string> sourceStrings = new Dictionary<DebugSource, string>
-            {
-                { DebugSource.DebugSourceApi, "API - A call to the OpenGL API" },
-                { DebugSource.DebugSourceWindowSystem, "Window System - A call to a window system API" },
-                { DebugSource.DebugSourceShaderCompiler, "Shader Compiler" },
-                { DebugSource.DebugSourceThirdParty, "Third Party - A third party application associated with OpenGL" },
-                { DebugSource.DebugSourceApplication, "Application - A call to GL.DebugMessageInsert() in this application" },
-                { DebugSource.DebugSourceOther, "Other" },
-                { DebugSource.DontCare, "Ignored" },
-            };
-            string? sourceString;
-            if (!sourceStrings.TryGetValue(source, out sourceString)) sourceString = "Unknown";
-            string? typeString = Enum.GetName(type);
-            if (typeString != null) typeString = typeString.Substring(9);
-            string? severityString = Enum.GetName(severity);
-            if (severityString != null) severityString = severityString.Substring(13);
-            Console.Error.WriteLine("OpenGL Error:\n  Source: " + sourceString + "\n  Type: " + typeString + "\n  Severity: " + severityString
-                + "\n  Message ID: " + id + "\n  Message: " + Marshal.PtrToStringAnsi(message, length) + "\n");
-        } // put a breakpoint here and inspect the stack to pinpoint where the error came from
-
         protected override void OnLoad()
         {
             base.OnLoad();
             // called during application initialization
-            Console.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version) + " (" + (Profile == ContextProfile.Compatability ? "Compatibility" : Profile) + " profile)");
-            Console.WriteLine("OpenGL Renderer: " + GL.GetString(StringName.Renderer) + (GL.GetString(StringName.Vendor) == "Intel" ? " (read DiscreteGPU.txt if you have another GPU that you would like to use)" : ""));
-            GL.Enable(EnableCap.DebugOutput);
-            // disable all debug messages
-            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DontCare, 0, new int[0], false);
-            // enable selected debug messages based on source, type, and severity
-            foreach (DebugSourceControl source in new DebugSourceControl[] { DebugSourceControl.DebugSourceApi, DebugSourceControl.DebugSourceShaderCompiler })
-            {
-                foreach (DebugTypeControl type in new DebugTypeControl[] { DebugTypeControl.DebugTypeError, DebugTypeControl.DebugTypeDeprecatedBehavior, DebugTypeControl.DebugTypeUndefinedBehavior, DebugTypeControl.DebugTypePortability })
-                {
-                    foreach (DebugSeverityControl severity in new DebugSeverityControl[] { DebugSeverityControl.DebugSeverityHigh })
-                    {
-                        GL.DebugMessageControl(source, type, severity, 0, new int[0], true);
-                    }
-                }
-            }
-            GL.DebugMessageCallback(DebugCallback, (IntPtr)0);
             GL.ClearColor(0, 0, 0, 0);
             GL.Disable(EnableCap.DepthTest);
             Surface screen = new(ClientSize.X, ClientSize.Y);
             app = new MyApplication(screen);
             screenID = app.screen.GenTexture();
-            if (allowPrehistoricOpenGL)
+            if(allowPrehistoricOpenGL)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
